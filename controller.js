@@ -11,12 +11,8 @@ let release_queue = new Queue(); // not needed but keeps code consistent
 let isolate_cap = 2;
 let test_cap = 2;
 
-ARRIVE_WAIT = 10;
-TEST_WAIT = 5;
-ISOLATE_WAIT = 20;
-
 arrive_queue.set_enqueue_callback((p) => {
-  timeout = ARRIVE_WAIT;
+  timeout = CFG.ARRIVE_WAIT;
   p.time_left = timeout;
   p.set_timer(() => render(), (person) => {
     arrive_queue.find_and_remove(person);
@@ -26,7 +22,7 @@ arrive_queue.set_enqueue_callback((p) => {
 });
 
 test_queue.set_enqueue_callback((p) => {
-  timeout = TEST_WAIT;
+  timeout = CFG.TEST_WAIT;
   p.unset_timer();
   p.time_left = timeout;
   p.set_timer(() => render(), () => {}, timeout)
@@ -42,7 +38,7 @@ test_queue.set_dequeue_callback((p) => {
 })
 
 isolate_queue.set_enqueue_callback((p) => {
-  timeout = ISOLATE_WAIT;
+  timeout = CFG.ISOLATE_WAIT;
   p.unset_timer();
   p.time_left = timeout;
   p.set_timer(() => render(), () => {}, timeout);
@@ -59,7 +55,7 @@ isolate_queue.set_dequeue_callback((p) => {
 
 function new_arrival(num_arrivals) {
   for (let i = 0; i < num_arrivals; i++) {
-    let p = new Person(ARRIVE_WAIT);
+    let p = new Person(CFG.ARRIVE_WAIT);
     arrive_queue.enqueue(p)
   }
   render();
@@ -120,12 +116,11 @@ function init_event_log() {
     .subscribe((t) => {
       render_countdown(Math.abs(t-900));
 
-      switch(t) {
-	case 0: new_arrival(1); break;
-	case 2: new_arrival(1); break; 
-	case 4: new_arrival(2); break;
-      }
+      let action = CFG.EVENT_LOG[t];
 
+      if (action != undefined && action.event == 'new_arrival') {
+	new_arrival(action.num_arrival);
+      }
     });
 }
 

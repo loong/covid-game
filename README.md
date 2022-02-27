@@ -7,13 +7,6 @@
 * UI components hold data
 * Central controller for game mechanics
 
-## Objects
+## Game mechanics
 
-Person:
-
- - has a timer
- - can be in a queue
-
-## General ToDos
-
-- Central file to configure game mechanics parameters
+Modify `cfg.js` to change the game mechanics.
