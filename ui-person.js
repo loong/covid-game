@@ -7,13 +7,17 @@ class Person {
     this.covid = true;  // TODO randomize
 
     // TODO add timer
+
+    this.render();
   }
 
-  render(parent) {
-    let frame = document.createElement('div');
-    frame.classList.add("frame-person");
-    frame.innerHTML = 'O';
+  render() {
+    this.frame = document.createElement('div');
+    this.frame.classList.add("frame-person");
+    this.frame.innerHTML = 'O';
+  }
 
-    parent.appendChild(frame);
+  attach(parent) {
+    parent.appendChild(this.frame);
   }
 }

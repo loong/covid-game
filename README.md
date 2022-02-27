@@ -9,10 +9,11 @@
 
 ## Objects
 
-
-
 Person:
 
  - has a timer
  - can be in a queue
- - 
+
+## General ToDos
+
+- Central file to configure game mechanics parameters
