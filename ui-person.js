@@ -1,8 +1,6 @@
 let _id_counter = 0;
 let persons = [];
 
-const MAX_WAIT = 30;
-
 class Person {
   constructor() {
     this.parent = null;
@@ -12,19 +10,29 @@ class Person {
     this.covid = true;  // TODO randomize
     
     this.time_left = MAX_WAIT;
-    this.timer = Rx.Observable.interval(1000)
-		   .take(MAX_WAIT)
-		   .map(t => Math.abs(t-MAX_WAIT))
-		   .subscribe(t => {
-		     this.time_left = t-1; // shows value of next render
-		     this.render();
-		   });
-    
 
     persons.push(this);
     this._id = _id_counter++;
 
     this.render();
+  }
+
+  set_timer(ticker_cb, timer_cb, timeout) {
+    this.ticker = Rx.Observable.interval(1000)
+		    .take(timeout-1)
+		    .map(t => Math.abs(t-timeout))
+		    .subscribe(t => {
+		      this.time_left = t; // shows value of next render
+		      this.render();
+		      ticker_cb(this);
+		    });
+    this.timer =  Rx.Observable.timer((timeout+1) * 1000)
+		    .subscribe(() => timer_cb(this));
+  }
+
+  unset_timer() {
+    this.ticker.unsubscribe();
+    this.timer.unsubscribe();
   }
 
   render() {

@@ -8,9 +8,20 @@ let test_queue = new Queue();
 let isolate_queue = new Queue();
 let release_queue = new Queue(); // not needed but keeps code consistent
 
+MAX_WAIT = 10;
+
 function new_arrival(num_arrivals) {
   for (let i = 0; i < num_arrivals; i++) {
-    arrive_queue.enqueue(new Person());
+    let p = new Person();
+    p.set_timer(
+      (person) => render(),
+      (person) => {
+	arrive_queue.find_and_remove(person);
+	release_queue.enqueue(person);
+	render()
+      },
+      MAX_WAIT);
+    arrive_queue.enqueue(p)
   }
   render();
 }
@@ -33,7 +44,11 @@ function set_transition_btn_event(btn_id, src_queue, dst_queue) {
     // TODO handle case when empty
   
     let p = src_queue.dequeue();
+    p.unset_timer();
+    p.time_left = MAX_WAIT;
+    p.set_timer(() => {}, () => {}, MAX_WAIT)
     dst_queue.enqueue(p);
+    p.render();
     render();
   })
 }
@@ -53,11 +68,10 @@ function init_event_log() {
 
       switch(t) {
 	case 0: new_arrival(1); break;
-	case 5: new_arrival(5); break; 
-	case 10: new_arrival(5); break;
+	case 2: new_arrival(1); break; 
+	case 4: new_arrival(2); break;
       }
 
-      render();
     });
 
 }

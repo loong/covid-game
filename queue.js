@@ -3,7 +3,6 @@
 class Queue {
   
   constructor(){
-    
     this.data = [];
     this.rear = 0;
   }
@@ -13,40 +12,44 @@ class Queue {
     this.rear = this.rear + 1;
   }
 
-  length() {
-    
+  length() { 
     return this.rear;
   }
 
-  isEmpty() {
-    
+  is_empty() {
     return this.rear === 0;
   }
 
-  getFront() {
-    
-    if(this.isEmpty() === false) {
+  get_front() {
+    if(this.is_empty() === false) {
       return this.data[0];
     }
   }
 
-  getLast() {
-    
-    if(this.isEmpty() === false) {
-      
+  get_last() {
+    if(this.is_empty() === false) {
       return this.data[ this.rear - 1 ] ;
     }
   }
 
   dequeue() {
-    if(this.isEmpty() === false) {
+    if(this.is_empty() === false) {
       this.rear = this.rear-1;
       return this.data.shift();
     }
   }
+
+  find_and_remove(element) {
+    for(let i = 0; i < this.rear; ++i) {
+      if (this.data[i] === element) {
+	this.data.splice(i, 1);
+	return;
+      }
+    }
+  }
   
   print() { 
-    for(let i =0; i < this.rear; i++) {
+    for(let i = 0; i < this.rear; ++i) {
       console.log(this.data[i]);
     }
   }
