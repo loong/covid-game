@@ -8,6 +8,9 @@ let test_queue = new Queue();
 let isolate_queue = new Queue();
 let release_queue = new Queue(); // not needed but keeps code consistent
 
+let isolate_cap = 10;
+let test_cap = 10;
+
 MAX_WAIT = 10;
 
 function new_arrival(num_arrivals) {
@@ -28,13 +31,23 @@ function new_arrival(num_arrivals) {
 
 function render_person_queue(queue, frame) {
   frame.replaceChildren(); // TODO get rid of this
-  queue.data.forEach(p => p.attach(frame))
+  queue.data.forEach(p => p.attach(frame));
+}
+
+function update_element(id, inner) {
+  let elem = document.getElementById(id);
+  elem.innerHTML = inner;
 }
 
 function render() {
   render_person_queue(arrive_queue, arrive_frame);
   render_person_queue(test_queue, test_frame);
   render_person_queue(isolate_queue, isolate_frame);
+
+  update_element('stats-released', release_queue.length());
+  update_element('stats-isolate', isolate_queue.length() + '/' + isolate_cap);
+  update_element('stats-test', test_queue.length() + '/' + test_cap);
+  update_element('stats-arrive', arrive_queue.length());
 }
 
 function set_transition_btn_event(btn_id, src_queue, dst_queue) {

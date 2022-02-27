@@ -39,6 +39,7 @@ class Queue {
     }
   }
 
+  // TODO this could be better
   find_and_remove(element) {
     for(let i = 0; i < this.rear; ++i) {
       if (this.data[i] === element) {
