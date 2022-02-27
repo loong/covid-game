@@ -1,3 +1,5 @@
+let cases_in_community = 0;
+
 function new_arrival(num_arrivals) {
   for (let i = 0; i < num_arrivals; i++) {
     let p = new Person(CFG.ARRIVE_WAIT);
@@ -34,6 +36,8 @@ function render() {
   update_element('stats-isolate', isolate_queue.length() + '/' + CFG.ISOLATE_CAP);
   update_element('stats-test', test_queue.length() + '/' + CFG.TEST_CAP);
   update_element('stats-arrive', arrive_queue.length());
+
+  update_element('stats-cases', cases_in_community);
 }
 
 function set_transition_btn_event(btn_id, src_queue, dst_queue) {

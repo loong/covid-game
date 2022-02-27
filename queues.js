@@ -42,3 +42,10 @@ isolate_queue.set_enqueue_callback((p) => {
 isolate_queue.set_dequeue_callback((p) => {
   enable('arrive-isolate-btn');
 })
+
+release_queue.set_enqueue_callback((p) => {
+  p.unset_timer();
+  if (p.covid) {
+    cases_in_community += 1;
+  }
+});
