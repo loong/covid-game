@@ -33,8 +33,8 @@ function render() {
   render_person_queue(isolate_queue, 'frame-isolate');
 
   update_element('stats-released', release_queue.length());
-  update_element('stats-isolate', isolate_queue.length() + '/' + CFG.ISOLATE_CAP);
-  update_element('stats-test', test_queue.length() + '/' + CFG.TEST_CAP);
+  update_element('stats-isolate', isolate_queue.length() + '/' + CFG.CAP_ISOLATE);
+  update_element('stats-test', test_queue.length() + '/' + CFG.CAP_TEST);
   update_element('stats-arrive', arrive_queue.length());
 
   update_element('stats-cases', cases_in_community);
@@ -64,23 +64,38 @@ function init_event_log() {
     .subscribe((t) => {
       render_countdown(Math.abs(t-900));
 
-      let action = CFG.EVENT_LOG[t];
-
+      let action = CFG.TIME_EVENT_LOG[t];
       if (action != undefined && action.event == 'new_arrival') {
 	new_arrival(action.num_arrival);
       }
     });
 }
 
-let start_btn = document.getElementById('start-btn');
-Rx.Observable.fromEvent(start_btn, 'click').subscribe(value => {
-  init_event_log();
-  start_btn.style.display = "none";
+function set_click_event(id, func) {
+  let btn = document.getElementById(id);
+  Rx.Observable.fromEvent(btn, 'click').subscribe(value => {
+    func(btn, value);
+  });
+}
+
+set_click_event('more-test-btn', (btn, value) => {
+  CFG.CAP_TEST = CFG.CAP_TEST_BONUS;
+  btn.disabled = true;
+});
+
+set_click_event('more-isolate-btn', (btn, value) => {
+  CFG.CAP_ISOLATE = CFG.CAP_ISOLATE_BONUS;
+  btn.disabled = true;  
+});
+
+set_click_event('more-more-btn', (btn, value) => {
+  alert('Not implemented')
+  btn.disabled = true;
 });
 
 function init() {
   init_event_log();
-  start_btn.style.display = "none";
+  document.getElementById('start-btn').style.display = "none";
 }
 
 init();

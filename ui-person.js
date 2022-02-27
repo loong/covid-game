@@ -43,7 +43,7 @@ class Person {
     let inner = '(' + this._id + ') : ' + this.time_left;
     if (this.vaccinated) inner += ' vaccinated';
     if (this.coughing) inner += ' coughing';
-    if (this.covid) inner += ' covid-positive';
+    // if (this.covid) inner += ' covid-positive';
     
     this.frame.innerHTML = inner;
   }
