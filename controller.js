@@ -45,8 +45,31 @@ set_transition_btn_event('test-isolate-btn', test_queue, isolate_queue);
 set_transition_btn_event('test-release-btn', test_queue, release_queue);
 set_transition_btn_event('isolate-release-btn', isolate_queue, release_queue);
 
+function init_event_log() {
+  Rx.Observable.interval(1000)
+    .take(900) // 15 min
+    .subscribe((t) => {
+      render_countdown(Math.abs(t-900));
+
+      switch(t) {
+	case 1: new_arrival(1); break;  
+	case 5: new_arrival(5); break;	  
+	case 10: new_arrival(5); break;
+      }
+    });
+
+}
+
+let start_btn = document.getElementById('start-btn');
+Rx.Observable.fromEvent(start_btn, 'click').subscribe(value => {
+  init_event_log();
+  start_btn.style.display = "none";
+});
+
 function init() {
-  new_arrival(5);
+  init_event_log();
+  start_btn.style.display = "none";
 }
 
 init();
+
