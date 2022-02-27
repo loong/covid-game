@@ -5,9 +5,11 @@ class Person {
   constructor(arrival_wait) {
     this.parent = null;
     
-    this.vaccinated = true; // TODO randomize
-    this.symptoms = 'coughing'; // TODO randomize from symptoms list
-    this.covid = true;  // TODO randomize
+    this.vaccinated = Math.random() < CFG.PROP_VAXXED;
+    this.coughing = Math.random() < CFG.PROP_COUGH;
+
+    // TODO
+    this.covid = Math.random() < 0.1 - 0.2 * this.vaccinated + 0.5 * this.coughing;
     
     this.time_left = arrival_wait;
 
@@ -38,7 +40,12 @@ class Person {
   render() {
     this.frame = document.createElement('div');
     this.frame.classList.add("frame-person"); // TODO add css
-    this.frame.innerHTML = '(' + this._id + ') : ' + this.time_left;
+    let inner = '(' + this._id + ') : ' + this.time_left;
+    if (this.vaccinated) inner += ' vaccinated';
+    if (this.coughing) inner += ' coughing';
+    if (this.covid) inner += ' covid-positive';
+    
+    this.frame.innerHTML = inner;
   }
 
   attach(parent) {
