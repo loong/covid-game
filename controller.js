@@ -41,6 +41,9 @@ function set_transition_btn_event(btn_id, src_queue, dst_queue) {
 set_transition_btn_event('arrive-test-btn', arrive_queue, test_queue);
 set_transition_btn_event('arrive-camp-btn', arrive_queue, camp_queue);
 set_transition_btn_event('arrive-release-btn', arrive_queue, release_queue);
+set_transition_btn_event('test-camp-btn', test_queue, camp_queue);
+set_transition_btn_event('test-release-btn', test_queue, release_queue);
+set_transition_btn_event('camp-release-btn', camp_queue, release_queue);
 
 function init() {
   new_arrival(5);
