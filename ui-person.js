@@ -2,14 +2,14 @@ let _id_counter = 0;
 let persons = [];
 
 class Person {
-  constructor() {
+  constructor(arrival_wait) {
     this.parent = null;
     
     this.vaccinated = true; // TODO randomize
     this.symptoms = 'coughing'; // TODO randomize from symptoms list
     this.covid = true;  // TODO randomize
     
-    this.time_left = MAX_WAIT;
+    this.time_left = arrival_wait;
 
     persons.push(this);
     this._id = _id_counter++;

@@ -8,35 +8,79 @@ let test_queue = new Queue();
 let isolate_queue = new Queue();
 let release_queue = new Queue(); // not needed but keeps code consistent
 
-let isolate_cap = 10;
-let test_cap = 10;
+let isolate_cap = 2;
+let test_cap = 2;
 
-MAX_WAIT = 10;
+ARRIVE_WAIT = 10;
+TEST_WAIT = 5;
+ISOLATE_WAIT = 20;
+
+arrive_queue.set_enqueue_callback((p) => {
+  timeout = ARRIVE_WAIT;
+  p.time_left = timeout;
+  p.set_timer(() => render(), (person) => {
+    arrive_queue.find_and_remove(person);
+    release_queue.enqueue(person);
+    render();
+  }, timeout);
+});
+
+test_queue.set_enqueue_callback((p) => {
+  timeout = TEST_WAIT;
+  p.unset_timer();
+  p.time_left = timeout;
+  p.set_timer(() => render(), () => {}, timeout)
+
+  if (test_queue.length() == test_cap) {
+    disable('arrive-test-btn');
+  }
+});
+
+test_queue.set_dequeue_callback((p) => {
+  console.log('Test dequeue');
+  enable('arrive-test-btn');
+})
+
+isolate_queue.set_enqueue_callback((p) => {
+  timeout = ISOLATE_WAIT;
+  p.unset_timer();
+  p.time_left = timeout;
+  p.set_timer(() => render(), () => {}, timeout);
+  
+  if (isolate_queue.length() == isolate_cap) {
+    disable('arrive-isolate-btn');
+  }
+});
+
+isolate_queue.set_dequeue_callback((p) => {
+  console.log('Test dequeue');
+  enable('arrive-isolate-btn');
+})
 
 function new_arrival(num_arrivals) {
   for (let i = 0; i < num_arrivals; i++) {
-    let p = new Person();
-    p.set_timer(
-      (person) => render(),
-      (person) => {
-	arrive_queue.find_and_remove(person);
-	release_queue.enqueue(person);
-	render()
-      },
-      MAX_WAIT);
+    let p = new Person(ARRIVE_WAIT);
     arrive_queue.enqueue(p)
   }
   render();
 }
 
-function render_person_queue(queue, frame) {
-  frame.replaceChildren(); // TODO get rid of this
-  queue.data.forEach(p => p.attach(frame));
-}
-
 function update_element(id, inner) {
   let elem = document.getElementById(id);
   elem.innerHTML = inner;
+}
+
+function enable(id) {
+  document.getElementById(id).disabled = false;
+}
+
+function disable(id) {
+  document.getElementById(id).disabled = true;
+}
+
+function render_person_queue(queue, frame) {
+  frame.replaceChildren(); // TODO get rid of this
+  queue.data.forEach(p => p.attach(frame));
 }
 
 function render() {
@@ -57,9 +101,6 @@ function set_transition_btn_event(btn_id, src_queue, dst_queue) {
     // TODO handle case when empty
   
     let p = src_queue.dequeue();
-    p.unset_timer();
-    p.time_left = MAX_WAIT;
-    p.set_timer(() => {}, () => {}, MAX_WAIT)
     dst_queue.enqueue(p);
     p.render();
     render();
@@ -86,7 +127,6 @@ function init_event_log() {
       }
 
     });
-
 }
 
 let start_btn = document.getElementById('start-btn');

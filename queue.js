@@ -10,6 +10,12 @@ class Queue {
   enqueue(element) {
     this.data[this.rear] = element;
     this.rear = this.rear + 1;
+
+    if (this.enqueue_cb) this.enqueue_cb(element);
+  }
+
+  set_enqueue_callback(cb) {
+    this.enqueue_cb = cb;
   }
 
   length() { 
@@ -35,9 +41,16 @@ class Queue {
   dequeue() {
     if(this.is_empty() === false) {
       this.rear = this.rear-1;
-      return this.data.shift();
+      let elem = this.data.shift();
+      if (this.dequeue_cb) this.dequeue_cb();
+      return elem;
     }
   }
+
+  set_dequeue_callback(cb) {
+    this.dequeue_cb = cb;
+  }
+
 
   // TODO this could be better
   find_and_remove(element) {
