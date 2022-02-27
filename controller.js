@@ -52,10 +52,12 @@ function init_event_log() {
       render_countdown(Math.abs(t-900));
 
       switch(t) {
-	case 1: new_arrival(1); break;  
-	case 5: new_arrival(5); break;	  
+	case 0: new_arrival(1); break;
+	case 5: new_arrival(5); break; 
 	case 10: new_arrival(5); break;
       }
+
+      render();
     });
 
 }
