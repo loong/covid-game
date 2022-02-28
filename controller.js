@@ -1,10 +1,25 @@
-const cases_in_community = 0;
+import {CFG} from './cfg.js';
+import {Queue} from './queue.js';
+
+import {Timer} from './ui-timer.js';
+import {Person} from './ui-person.js';
+
+export const arrive_queue = new Queue();
+export const test_queue = new Queue();
+export const isolate_queue = new Queue();
+export const release_queue = new Queue(); // not needed but keeps code consistent
+
+let cases_in_community = 0;
+
+const timer_frame = document.getElementById('ui-timer');
+let ui_timer = new Timer(timer_frame); // TODO not need to save instance?
 
 function new_arrival(num_arrivals) {
   for (let i = 0; i < num_arrivals; i++) {
     const p = new Person(CFG.ARRIVE_WAIT);
     arrive_queue.enqueue(p);
   }
+  console.log(num_arrivals + ' new arrivals!')
   render();
 }
 
@@ -27,7 +42,7 @@ function render_person_queue(queue, frame_id) {
   queue.data.forEach((p) => p.attach(frame));
 }
 
-function render() {
+export function render() {
   render_person_queue(arrive_queue, 'frame-arrive');
   render_person_queue(test_queue, 'frame-test');
   render_person_queue(isolate_queue, 'frame-isolate');
@@ -62,7 +77,7 @@ function init_event_log() {
   Rx.Observable.interval(1000)
     .take(900) // 15 min
     .subscribe((t) => {
-      render_countdown(Math.abs(t - 900));
+      ui_timer.render(Math.abs(t - 900)); // TODO spaghetti ref
 
       const action = CFG.TIME_EVENT_LOG[t];
       if (action != undefined && action.event == 'new_arrival') {
@@ -77,6 +92,69 @@ function set_click_event(id, func) {
     func(btn, value);
   });
 }
+
+arrive_queue.set_enqueue_callback((p) => {
+  let timeout = CFG.ARRIVE_WAIT;
+  p.time_left = timeout;
+  p.set_timer(() => render(), (person) => {
+    arrive_queue.find_and_remove(person);
+    release_queue.enqueue(person);
+    render();
+  }, timeout);
+});
+
+test_queue.set_enqueue_callback((p) => {
+  let timeout = CFG.TEST_WAIT;
+  p.unset_timer();
+  p.time_left = timeout;
+  p.set_timer(() => render(), () => {}, timeout);
+
+  if (test_queue.length() == CFG.CAP_TEST) {
+    disable('arrive-test-btn');
+  }
+});
+
+test_queue.set_dequeue_callback((p) => {
+  enable('arrive-test-btn');
+});
+
+isolate_queue.set_enqueue_callback((p) => {
+  let timeout = CFG.ISOLATE_WAIT;
+  p.unset_timer();
+  p.time_left = timeout;
+  p.set_timer(() => render(), () => {}, timeout);
+
+  if (isolate_queue.length() == CFG.CAP_ISOLATE) {
+    disable('arrive-isolate-btn');
+  }
+});
+
+isolate_queue.set_dequeue_callback((p) => {
+  enable('arrive-isolate-btn');
+});
+
+release_queue.set_enqueue_callback((p) => {
+  p.unset_timer();
+  if (p.covid) {
+    cases_in_community += 1;
+  }
+
+  const action = CFG.RELEASE_EVENT_LOG[release_queue.length()];
+  if (action != undefined) {
+    switch (action.event) {
+      // TODO should use events
+      case 'activate_test_bonus':
+        enable('more-test-btn');
+        break;
+      case 'activate_isolate_bonus':
+        enable('more-isolate-btn');
+        break;
+      case 'activate_more_bonus':
+        enable('more-more-btn');
+        break;
+    }
+  }
+});
 
 set_click_event('more-test-btn', (btn, value) => {
   CFG.CAP_TEST = CFG.CAP_TEST_BONUS;

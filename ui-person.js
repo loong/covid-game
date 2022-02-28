@@ -1,7 +1,9 @@
+import {CFG} from './cfg.js';
+
 let _id_counter = 0;
 const persons = [];
 
-class Person {
+export class Person {
   constructor(arrival_wait) {
     this.parent = null;
 

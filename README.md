@@ -30,3 +30,4 @@ npx live-server
 
 * Show testing result
 * Model active cases
+* If queue empty, cannot release

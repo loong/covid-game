@@ -1,6 +1,9 @@
-// https://betterprogramming.pub/implementing-a-queue-in-javascript-59b332c7ff0d
+import {CFG} from './cfg.js';
 
-class Queue {
+export class Queue {
+  // Modified from
+  // https://betterprogramming.pub/implementing-a-queue-in-javascript-59b332c7ff0d
+
   constructor() {
     this.data = [];
     this.rear = 0;
