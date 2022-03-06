@@ -1,5 +1,3 @@
-import {CFG} from './cfg.js';
-
 export class Queue {
   // Modified from
   // https://betterprogramming.pub/implementing-a-queue-in-javascript-59b332c7ff0d
@@ -53,20 +51,12 @@ export class Queue {
     this.dequeue_cb = cb;
   }
 
-  // TODO this could be better
-  find_and_remove(element) {
-    for (let i = 0; i < this.rear; ++i) {
-      if (this.data[i] === element) {
-        this.data.splice(i, 1);
-        return;
-      }
-    }
+  remove(element) {
+    this.data = this.data.filter((x) => x !== element);
   }
 
   print() {
-    for (let i = 0; i < this.rear; ++i) {
-      console.log(this.data[i]);
-    }
+    this.data.forEach((d) => console.log(d));
   }
 
   clear() {

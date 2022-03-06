@@ -97,7 +97,7 @@ arrive_queue.set_enqueue_callback((p) => {
   let timeout = CFG.ARRIVE_WAIT;
   p.time_left = timeout;
   p.set_timer(() => render(), (person) => {
-    arrive_queue.find_and_remove(person);
+    arrive_queue.remove(person);
     release_queue.enqueue(person);
     render();
   }, timeout);
